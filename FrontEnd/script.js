@@ -43,9 +43,9 @@ function addProjects(projectsData) {
 function updateProjectsByCategory(selectedCategory) {
     let filteredProjects = [];
     if (selectedCategory === 'all') {
-        filteredProjects = allProjectsData; // Afficher tous les projets si la catégorie est "all"
+        filteredProjects = allProjectsData;
     } else {
-        filteredProjects = allProjectsData.filter(project => project.category.name === selectedCategory); // Filtrer les projets par catégorie
+        filteredProjects = allProjectsData.filter(project => project.category.name === selectedCategory);
     }
 
     removeGallery();
@@ -53,7 +53,7 @@ function updateProjectsByCategory(selectedCategory) {
 }
 
 function getCategoryLabel(category) {
-    return category.name; // Utiliser le nom de la catégorie directement depuis l'objet de catégorie
+    return category.name;
 }
 
 function fetchCategories() {
@@ -69,7 +69,7 @@ function fetchCategories() {
 function addFilterButtons() {
     fetchCategories()
         .then(categories => {
-            allCategories = categories; // Stocker les catégories récupérées dans la variable globale
+            allCategories = categories;
             const filterButtonsContainer = document.createElement('div');
             filterButtonsContainer.classList.add('filter-buttons');
 
@@ -91,7 +91,7 @@ function addFilterButtons() {
 
                 button.addEventListener('click', () => {
                     const selectedCategory = button.getAttribute('data-category');
-                    updateProjectsByCategory(selectedCategory); // Filtrer les projets en fonction de la catégorie sélectionnée
+                    updateProjectsByCategory(selectedCategory);
                 });
 
                 filterButtonsContainer.appendChild(button);
@@ -105,7 +105,296 @@ function addFilterButtons() {
 
 fetchProjects()
     .then(projectsData => {
-        allProjectsData = projectsData; // Stocker les projets récupérés dans la variable globale
+        allProjectsData = projectsData;
         addFilterButtons();
-        updateProjectsByCategory('all'); // Afficher tous les projets initialement
+        updateProjectsByCategory('all');
+        fetchProjects()
+        initializeDeleteButtons();
     });
+
+function checkLoggedIn() {
+    const isLoggedIn = localStorage.getItem('token') !== null;
+    const loginLink = document.querySelector('#loginLink');
+
+    if (isLoggedIn) {
+        loginLink.textContent = 'logout';
+        loginLink.href = '#';
+        loginLink.id = 'logoutLink';
+        loginLink.addEventListener('click', handleLogout);
+    } else {
+
+        loginLink.textContent = 'Login';
+        loginLink.href = 'login.html';
+        loginLink.removeEventListener('click', handleLogout);
+    }
+}
+
+
+function handleLogout(event) {
+    event.preventDefault();
+
+
+    localStorage.removeItem('token');
+
+    window.location.href = 'login.html';
+}
+
+document.addEventListener('DOMContentLoaded', checkLoggedIn);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const isLoggedIn = localStorage.getItem('token') !== null;
+    const ribbon = document.getElementById('ribbon');
+    const editModeButton = document.getElementById('editModeButton');
+    const logoutLink = document.getElementById('logoutLink');
+    const editButtonsContainer = document.querySelectorAll('.editButtons');
+    const filterButtonsContainer = document.querySelector('.filter-buttons');
+    const goToStep1Button = document.getElementById('goToStep1');
+    const goToStep2Button = document.getElementById('goToStep2');
+    const modalContentStep1 = document.querySelector('.modal-content.step-1');
+    const modalContentStep2 = document.querySelector('.modal-content.step-2');
+
+    const goToStep2 = () => {
+        modalContentStep1.style.display = 'none';
+        modalContentStep2.style.display = 'block';
+    };
+
+    const goToStep1 = () => {
+        modalContentStep2.style.display = 'none';
+        modalContentStep1.style.display = 'block';
+    };
+
+    goToStep2Button.addEventListener('click', goToStep2);
+    goToStep1Button.addEventListener('click', goToStep1);
+
+    if (isLoggedIn) {
+        ribbon.style.display = 'flex';
+        editButtonsContainer.forEach(button => {
+            button.style.display = 'flex';
+        });
+
+        if (filterButtonsContainer) {
+            filterButtonsContainer.style.display = 'none';
+        }
+    } else {
+        ribbon.style.display = 'none';
+        editButtonsContainer.forEach(button => {
+            button.style.display = 'none';
+        });
+
+        if (filterButtonsContainer) {
+            filterButtonsContainer.style.display = 'flex';
+        }
+    }
+
+    editModeButton.addEventListener('click', () => {
+    });
+
+    logoutLink.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+    });
+
+});
+
+
+let modal = null;
+
+const openModal = function (target) {
+    target.style.display = null;
+    target.removeAttribute('aria-hidden');
+    target.setAttribute('aria-modal', 'true');
+    modal = target;
+    modal.addEventListener('click', closeModal);
+    modal.querySelector('.js-modal-close').addEventListener('click', closeModal);
+    modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation);
+};
+
+const closeModal = function () {
+    if (modal === null) return;
+    modal.style.display = "none";
+    modal.setAttribute('aria-hidden', 'true');
+    modal.removeAttribute('aria-modal');
+    modal.removeEventListener('click', closeModal);
+    modal.querySelector('.js-modal-close').removeEventListener('click', closeModal);
+    modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation);
+    modal = null;
+};
+
+const stopPropagation = function (e) {
+    e.stopPropagation();
+};
+
+const handleModalOpen = function (e) {
+    e.preventDefault();
+    const target = document.querySelector(e.target.getAttribute('href'));
+    openModal(target);
+};
+
+const initializeModal = function () {
+    document.querySelectorAll('.modifier-button').forEach(a => {
+        a.addEventListener('click', handleModalOpen);
+    });
+
+    window.addEventListener('keydown', function (e) {
+        if (e.key === "Escape" || e.key === "Esc") {
+            closeModal();
+        }
+    });
+};
+
+document.addEventListener('DOMContentLoaded', initializeModal);
+
+function editProjectsToModal(projectsData) {
+    const modalProjectsContainer = document.querySelector('.modal-projects');
+
+    projectsData.forEach(project => {
+        const projectFigure = document.createElement('figure');
+        const projectImage = document.createElement('img');
+        const projectCaption = document.createElement('figcaption');
+        const deleteIcon = document.createElement('i');
+        const moveIcon = document.createElement('i');
+
+        projectImage.src = project.imageUrl;
+        projectImage.alt = project.title;
+        projectCaption.textContent = "éditer";
+
+        deleteIcon.classList.add('fa', 'fa-trash', 'delete-icon');
+        moveIcon.classList.add('fa', 'fa-arrows-up-down-left-right', 'move-icon');
+
+        projectFigure.appendChild(projectImage);
+        projectFigure.appendChild(deleteIcon);
+        projectFigure.appendChild(moveIcon);
+        projectFigure.appendChild(projectCaption);
+        modalProjectsContainer.appendChild(projectFigure);
+    });
+}
+
+function saveProjectsToLocalStorage() {
+    localStorage.setItem('projects', JSON.stringify(allProjectsData));
+}
+
+function initializeDeleteButtons() {
+    const deleteIcons = document.querySelectorAll('.delete-icon');
+
+    deleteIcons.forEach(deleteIcon => {
+        deleteIcon.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const projectFigure = deleteIcon.closest('figure');
+            const projectImage = projectFigure.querySelector('img');
+            const projectTitle = projectImage.alt;
+
+            const projectIndex = allProjectsData.findIndex(project => project.title === projectTitle);
+            if (projectIndex !== -1) {
+                const projectId = allProjectsData[projectIndex].id;
+                deleteProjectFromAPI(projectId)
+                    .then(() => {
+                        allProjectsData.splice(projectIndex, 1);
+                        saveProjectsToLocalStorage();
+                        updateProjectsByCategory('all');
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la suppression du projet : ', error);
+                    });
+            }
+        });
+    });
+}
+
+function deleteProjectFromAPI(projectId) {
+    const urlAPI = `http://localhost:5678/api/works/${projectId}`;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('Token not found. Cannot delete project.');
+        return Promise.reject('Token not found');
+    }
+
+    return fetch(urlAPI, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+}
+
+
+function addImage() {
+
+    const photoImage = document.getElementById('photoImage');
+    const previewImage = document.getElementById('previewImage');
+
+    photoImage.addEventListener('change', (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const objectURL = URL.createObjectURL(selectedFile);
+            previewImage.src = objectURL;
+            previewImage.style.display = 'block';
+        } else {
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+        }
+    });
+}
+
+addImage();
+
+function addNewProject() {
+
+    const addPhotoForm = document.getElementById('addPhotoForm');
+    const photoImage = document.getElementById('photoImage');
+    const photoTitle = document.getElementById('photoTitle');
+    const photoCategory = document.getElementById('photoCategory');
+
+    addPhotoForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData();
+        formData.append("image", photoImage.files[0]);
+        formData.append("title", photoTitle.value);
+        formData.append("categoryId", 1);
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Token not found. Cannot add a new project.');
+                return;
+            }
+
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${token}`);
+
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: formData,
+                redirect: 'follow'
+            };
+
+            const response = await fetch("http://localhost:5678/api/works", requestOptions);
+
+            if (response.ok) {
+                const newProjectData = await response.json();
+                allProjectsData.push(newProjectData);
+                addProjects([newProjectData]);
+                closeModal();
+
+                photoImage.value = '';
+                photoTitle.value = '';
+                photoCategory.value = 'Objets';
+
+                console.log('Nouveau projet ajouté avec succès !');
+            } else {
+                console.error('Erreur lors de l\'ajout du projet.');
+            }
+        } catch (error) {
+            console.error('Une erreur s\'est produite : ', error);
+        }
+
+    });
+
+}
+
+
+addNewProject();
