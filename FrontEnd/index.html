@@ -125,7 +125,6 @@
 					<hr>
 					<button class="modal-add" id="goToStep2">Ajouter une photo</button>
 					<br>
-					<a class="modal-supp" href="#">Supprimer la galerie</a>
 				</div>
 				<div class="modal-content step-2" style="display: none;">
 					<form id="addPhotoForm">
@@ -142,14 +141,14 @@
 							<input type="text" id="photoTitle" name="title" required>
 							<label for="photoCategory">Catégorie :</label>
 							<select id="photoCategory" name="category" required>
-								<option value="Objets">Objets</option>
-								<option value="Appartements">Appartements</option>
-								<option value="Hotels & restaurants">Hotels & restaurants</option>
+								<option value="0">Objets</option>
+								<option value="1">Appartements</option>
+								<option value="2">Hotels & restaurants</option>
 							</select>
 						</div>
 						<hr>
-						<button type="submit" class="modal-add">Valider</button>
 					</form>
+					<button type="submit" class="modal-add" id="submitBtn">Valider</button>
 				</div>
 			</div>
 		</aside>

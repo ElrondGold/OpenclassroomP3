@@ -109,7 +109,6 @@ fetchProjects()
         addFilterButtons();
         updateProjectsByCategory('all');
         fetchProjects()
-        initializeDeleteButtons();
     });
 
 function checkLoggedIn() {
@@ -230,9 +229,15 @@ const handleModalOpen = function (e) {
     e.preventDefault();
     const target = document.querySelector(e.target.getAttribute('href'));
     openModal(target);
+
+    const modalProjectsContainer = document.querySelector('.modal-projects');
+    modalProjectsContainer.innerHTML = '';
+
+    editProjectsToModal(allProjectsData);
 };
 
-const initializeModal = function () {
+
+function initializeModal() {
     document.querySelectorAll('.modifier-button').forEach(a => {
         a.addEventListener('click', handleModalOpen);
     });
@@ -242,43 +247,26 @@ const initializeModal = function () {
             closeModal();
         }
     });
-};
+    editProjectsToModal(allProjectsData);
+}
 
 document.addEventListener('DOMContentLoaded', initializeModal);
 
 function editProjectsToModal(projectsData) {
     const modalProjectsContainer = document.querySelector('.modal-projects');
+    modalProjectsContainer.innerHTML = '';
 
     projectsData.forEach(project => {
         const projectFigure = document.createElement('figure');
         const projectImage = document.createElement('img');
         const projectCaption = document.createElement('figcaption');
         const deleteIcon = document.createElement('i');
-        const moveIcon = document.createElement('i');
 
         projectImage.src = project.imageUrl;
         projectImage.alt = project.title;
-        projectCaption.textContent = "éditer";
 
         deleteIcon.classList.add('fa', 'fa-trash', 'delete-icon');
-        moveIcon.classList.add('fa', 'fa-arrows-up-down-left-right', 'move-icon');
 
-        projectFigure.appendChild(projectImage);
-        projectFigure.appendChild(deleteIcon);
-        projectFigure.appendChild(moveIcon);
-        projectFigure.appendChild(projectCaption);
-        modalProjectsContainer.appendChild(projectFigure);
-    });
-}
-
-function saveProjectsToLocalStorage() {
-    localStorage.setItem('projects', JSON.stringify(allProjectsData));
-}
-
-function initializeDeleteButtons() {
-    const deleteIcons = document.querySelectorAll('.delete-icon');
-
-    deleteIcons.forEach(deleteIcon => {
         deleteIcon.addEventListener('click', (event) => {
             event.stopPropagation();
             const projectFigure = deleteIcon.closest('figure');
@@ -293,14 +281,29 @@ function initializeDeleteButtons() {
                         allProjectsData.splice(projectIndex, 1);
                         saveProjectsToLocalStorage();
                         updateProjectsByCategory('all');
+                        editProjectsToModal(allProjectsData);
                     })
                     .catch(error => {
                         console.error('Erreur lors de la suppression du projet : ', error);
                     });
             }
         });
+
+        projectFigure.appendChild(projectImage);
+        projectFigure.appendChild(deleteIcon);
+        projectFigure.appendChild(projectCaption);
+        modalProjectsContainer.appendChild(projectFigure);
     });
 }
+
+
+
+
+function saveProjectsToLocalStorage() {
+    localStorage.setItem('projects', JSON.stringify(allProjectsData));
+}
+
+
 
 function deleteProjectFromAPI(projectId) {
     const urlAPI = `http://localhost:5678/api/works/${projectId}`;
@@ -341,19 +344,18 @@ function addImage() {
 addImage();
 
 function addNewProject() {
-
-    const addPhotoForm = document.getElementById('addPhotoForm');
     const photoImage = document.getElementById('photoImage');
     const photoTitle = document.getElementById('photoTitle');
     const photoCategory = document.getElementById('photoCategory');
+    const submitBtn = document.getElementById('submitBtn');
 
-    addPhotoForm.addEventListener('submit', async (event) => {
+    submitBtn.addEventListener('click', async (event) => {
         event.preventDefault();
 
         const formData = new FormData();
         formData.append("image", photoImage.files[0]);
         formData.append("title", photoTitle.value);
-        formData.append("categoryId", 1);
+        formData.append("category", 1);
 
         try {
             const token = localStorage.getItem('token');
@@ -382,7 +384,7 @@ function addNewProject() {
 
                 photoImage.value = '';
                 photoTitle.value = '';
-                photoCategory.value = 'Objets';
+                photoCategory.value = '0';
 
                 console.log('Nouveau projet ajouté avec succès !');
             } else {
@@ -391,9 +393,7 @@ function addNewProject() {
         } catch (error) {
             console.error('Une erreur s\'est produite : ', error);
         }
-
     });
-
 }
 
 
