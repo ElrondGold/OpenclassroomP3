@@ -384,7 +384,7 @@ function addNewProject() {
             if (response.ok) {
                 const newProjectData = await response.json();
                 allProjectsData.push(newProjectData);
-                addProjects([newProjectData]);
+                addProjects(allProjectsData);
                 closeModal();
 
                 photoImage.value = '';
