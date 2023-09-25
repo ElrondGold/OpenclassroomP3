@@ -122,7 +122,7 @@ function checkLoggedIn() {
         loginLink.addEventListener('click', handleLogout);
     } else {
 
-        loginLink.textContent = 'Login';
+        loginLink.textContent = 'login';
         loginLink.href = 'login.html';
         loginLink.removeEventListener('click', handleLogout);
     }
@@ -355,7 +355,7 @@ function addNewProject() {
         const formData = new FormData();
         formData.append("image", photoImage.files[0]);
         formData.append("title", photoTitle.value);
-        formData.append("category", 1);
+        formData.append("category", photoCategory.value);
 
         try {
             const token = localStorage.getItem('token');
@@ -373,6 +373,11 @@ function addNewProject() {
                 body: formData,
                 redirect: 'follow'
             };
+
+            if (photoTitle.value.trim() === '') {
+                alert("Veuillez entrer un titre pour le projet.");
+                return;
+            }
 
             const response = await fetch("http://localhost:5678/api/works", requestOptions);
 
@@ -393,8 +398,36 @@ function addNewProject() {
         } catch (error) {
             console.error('Une erreur s\'est produite : ', error);
         }
-    });
+    }, true);
 }
 
 
 addNewProject();
+
+function addImage() {
+    const photoImage = document.getElementById('photoImage');
+    const previewImage = document.getElementById('previewImage');
+    const label = document.querySelector('.add_photo label');
+    const icon = document.querySelector('.add_photo i');
+    const p = document.querySelector('.add_photo p');
+
+    photoImage.addEventListener('change', (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const objectURL = URL.createObjectURL(selectedFile);
+            previewImage.src = objectURL;
+            previewImage.style.display = 'block';
+            label.style.display = 'none';
+            icon.style.display = 'none';
+            p.style.display = 'none';
+        } else {
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+            label.style.display = 'block';
+            icon.style.display = 'block';
+            p.style.display = 'block';
+        }
+    });
+}
+
+addImage();

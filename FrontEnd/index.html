@@ -104,7 +104,7 @@
 		<section id="contact">
 			<h2>Contact</h2>
 			<p>Vous avez un projet ? Discutons-en !</p>
-			<form action="#" method="post">
+			<form method="post">
 				<label for="name">Nom</label>
 				<input type="text" name="name" id="name">
 				<label for="email">Email</label>
@@ -117,8 +117,10 @@
 		<aside id="modal1" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titlemodal"
 			style="display: none">
 			<div class="modal-wrapper js-modal-stop">
-				<button class="modal-back" id="goToStep1">Retour</button>
-				<i class="fa-solid fa-xmark js-modal-close"></i>
+				<div class="header-modal">
+					<i class="fa-solid fa-arrow-left modal-back" id="goToStep1"></i>
+					<i class="fa-solid fa-xmark js-modal-close"></i>
+				</div>
 				<div class="modal-content step-1" style="display: block;">
 					<h2 id="titlemodal">Galerie photo</h2>
 					<div class="modal-projects"></div>
@@ -141,9 +143,9 @@
 							<input type="text" id="photoTitle" name="title" required>
 							<label for="photoCategory">Catégorie :</label>
 							<select id="photoCategory" name="category" required>
-								<option value="0">Objets</option>
-								<option value="1">Appartements</option>
-								<option value="2">Hotels & restaurants</option>
+								<option value="1">Objets</option>
+								<option value="2">Appartements</option>
+								<option value="3">Hotels & restaurants</option>
 							</select>
 						</div>
 						<hr>
