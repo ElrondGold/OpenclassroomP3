@@ -1,6 +1,3 @@
-let allProjectsData = [];
-let allCategories = [];
-
 function removeGallery() {
     const remGallery = document.querySelector(".gallery");
     if (remGallery) {
@@ -247,7 +244,6 @@ function initializeModal() {
             closeModal();
         }
     });
-    editProjectsToModal(allProjectsData);
 }
 
 document.addEventListener('DOMContentLoaded', initializeModal);
@@ -297,12 +293,9 @@ function editProjectsToModal(projectsData) {
 }
 
 
-
-
 function saveProjectsToLocalStorage() {
     localStorage.setItem('projects', JSON.stringify(allProjectsData));
 }
-
 
 
 function deleteProjectFromAPI(projectId) {
@@ -321,7 +314,6 @@ function deleteProjectFromAPI(projectId) {
         }
     });
 }
-
 
 function addImage() {
 
@@ -343,13 +335,41 @@ function addImage() {
 
 addImage();
 
+function addImageToModal() {
+    const photoImage = document.getElementById('photoImage');
+    const previewImage = document.getElementById('previewImage');
+    const label = document.querySelector('.add_photo label');
+    const icon = document.querySelector('.add_photo i');
+    const p = document.querySelector('.add_photo p');
+
+    photoImage.addEventListener('change', (event) => {
+        const selectedFile = event.target.files[0];
+        if (selectedFile) {
+            const objectURL = URL.createObjectURL(selectedFile);
+            previewImage.src = objectURL;
+            previewImage.style.display = 'block';
+            label.style.display = 'none';
+            icon.style.display = 'none';
+            p.style.display = 'none';
+        } else {
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+            label.style.display = 'block';
+            icon.style.display = 'block';
+            p.style.display = 'block';
+        }
+    });
+}
+
+addImageToModal();
+
 function addNewProject() {
     const photoImage = document.getElementById('photoImage');
     const photoTitle = document.getElementById('photoTitle');
     const photoCategory = document.getElementById('photoCategory');
-    const submitBtn = document.getElementById('submitBtn');
+    const submitBtn = document.getElementById('addPhotoForm');
 
-    submitBtn.addEventListener('click', async (event) => {
+    submitBtn.addEventListener('submit', async (event) => {
         event.preventDefault();
 
         const formData = new FormData();
@@ -383,7 +403,8 @@ function addNewProject() {
 
             if (response.ok) {
                 const newProjectData = await response.json();
-                allProjectsData.push(newProjectData);
+                allProjectsData.push(newProjectData);// cette ligne rafraichit la page 
+                removeGallery();
                 addProjects(allProjectsData);
                 closeModal();
 
@@ -398,36 +419,7 @@ function addNewProject() {
         } catch (error) {
             console.error('Une erreur s\'est produite : ', error);
         }
-    }, true);
-}
-
-
-addNewProject();
-
-function addImage() {
-    const photoImage = document.getElementById('photoImage');
-    const previewImage = document.getElementById('previewImage');
-    const label = document.querySelector('.add_photo label');
-    const icon = document.querySelector('.add_photo i');
-    const p = document.querySelector('.add_photo p');
-
-    photoImage.addEventListener('change', (event) => {
-        const selectedFile = event.target.files[0];
-        if (selectedFile) {
-            const objectURL = URL.createObjectURL(selectedFile);
-            previewImage.src = objectURL;
-            previewImage.style.display = 'block';
-            label.style.display = 'none';
-            icon.style.display = 'none';
-            p.style.display = 'none';
-        } else {
-            previewImage.src = '';
-            previewImage.style.display = 'none';
-            label.style.display = 'block';
-            icon.style.display = 'block';
-            p.style.display = 'block';
-        }
     });
 }
+addNewProject();
 
-addImage();
