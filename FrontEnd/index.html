@@ -11,16 +11,21 @@
 		rel="stylesheet">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
+	<script src="https://kit.fontawesome.com/72036f02b0.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
 	<header>
+		<div id="ribbon" class="ribbon centered">
+			<button id="editModeButton" class="edit-button"><i class="fa-solid fa-pen-to-square"></i> Mode
+				édition</button>
+		</div>
 		<h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1>
 		<nav>
 			<ul>
-				<li>projets</li>
+				<li><a href="index.html">projets</a></li>
 				<li>contact</li>
-				<li>login</li>
+				<li><a href="login.html" id="loginLink">login</a></li>
 				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 			</ul>
 		</nav>
@@ -42,7 +47,13 @@
 			</article>
 		</section>
 		<section id="portfolio">
-			<h2>Mes Projets</h2>
+			<div class="titleProj">
+				<h2>Mes Projets</h2>
+				<div class="editButtons">
+					<i class="fa-solid fa-pen-to-square"></i>
+					<a href="#modal1" class="modifier-button">modifier</a>
+				</div>
+			</div>
 			<div class="gallery">
 				<figure>
 					<img src="assets/images/abajour-tahina.png" alt="Abajour Tahina">
@@ -93,16 +104,58 @@
 		<section id="contact">
 			<h2>Contact</h2>
 			<p>Vous avez un projet ? Discutons-en !</p>
-			<form action="#" method="post">
+			<form method="post">
 				<label for="name">Nom</label>
 				<input type="text" name="name" id="name">
 				<label for="email">Email</label>
 				<input type="email" name="email" id="email">
 				<label for="message">Message</label>
 				<textarea name="message" id="message" cols="30" rows="10"></textarea>
-				<input type="submit" value="Envoyer">
+				<input type="#" value="Envoyer">
 			</form>
 		</section>
+		<aside id="modal1" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titlemodal"
+			style="display: none">
+			<div class="modal-wrapper js-modal-stop">
+				<div class="header-modal">
+					<i class="fa-solid fa-arrow-left modal-back" id="goToStep1"></i>
+					<i class="fa-solid fa-xmark js-modal-close"></i>
+				</div>
+				<div class="modal-content step-1" style="display: block;">
+					<h2 id="titlemodal">Galerie photo</h2>
+					<div class="modal-projects"></div>
+					<hr>
+					<button class="modal-add" id="goToStep2">Ajouter une photo</button>
+					<br>
+				</div>
+				<div class="modal-content step-2" style="display: none;">
+					<form id="addPhotoForm">
+						<h2 id="titlemodal">Ajout photo</h2>
+						<div class="add_photo">
+							<i class="fa-regular fa-image fa-2xl"></i>
+							<label for="photoImage">+ Ajouter photo</label>
+							<img id="previewImage" src="" alt="Prévisualisation de l'image" style="display: none;">
+							<input type="file" id="photoImage" name="photoImage" accept="image/*" required>
+							<p>jpg , png : 4 mo max</p>
+						</div>
+						<div class="title_cat">
+							<label for="photoTitle">Titre :</label>
+							<input type="text" id="photoTitle" name="title" required>
+							<label for="photoCategory">Catégorie :</label>
+							<select id="photoCategory" name="category" required>
+								<option value="1">Objets</option>
+								<option value="2">Appartements</option>
+								<option value="3">Hotels & restaurants</option>
+							</select>
+						</div>
+						<hr>
+						<input type="submit" class="modal-add" id="submitBtn">Valider</input>
+					</form>
+				</div>
+			</div>
+		</aside>
+
+
 	</main>
 
 	<footer>
