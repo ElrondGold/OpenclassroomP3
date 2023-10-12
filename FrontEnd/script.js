@@ -277,7 +277,6 @@ function editProjectsToModal(projectsData) {
                 const projectId = allProjectsData[projectIndex].id;
                 deleteProjectFromAPI(projectId)
                     .then(() => {
-                        // Supprimer le projet de la liste allProjectsData
                         allProjectsData.splice(projectIndex, 1);
                         console.log('Projet supprimé avec succès !');
                     })
@@ -401,7 +400,7 @@ function addNewProject() {
 
             if (response.ok) {
                 const newProjectData = await response.json();
-                allProjectsData.push(newProjectData);// cette ligne rafraichit la page 
+                allProjectsData.push(newProjectData);
                 removeGallery();
                 addProjects(allProjectsData);
                 closeModal();
