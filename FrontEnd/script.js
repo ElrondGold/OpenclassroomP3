@@ -421,4 +421,3 @@ function addNewProject() {
 }
 addNewProject();
 
-// eviter de fermer la modale et remettre le nav au milieu
